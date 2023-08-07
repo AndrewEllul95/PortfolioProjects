@@ -243,5 +243,20 @@ GROUP BY
 -- Q10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - 
 -- how many points do customer A and B have at the end of January?
 
-
-
+SELECT 
+  S.customer_id, 
+  SUM(
+    CASE 
+      WHEN S.order_date BETWEEN MEM.join_date AND DATEADD(day, 6, MEM.join_date) THEN price * 10 * 2 
+      WHEN product_name = 'sushi' THEN price * 10 * 2 
+      ELSE price * 10 
+    END
+  ) as points 
+FROM 
+  MENU as M 
+  INNER JOIN SALES as S ON S.product_id = M.product_id
+  INNER JOIN MEMBERS AS MEM ON MEM.customer_id = S.customer_id 
+WHERE 
+  S.order_date BETWEEN '2021-01-01' AND '2021-01-31'
+GROUP BY 
+  S.customer_id;
